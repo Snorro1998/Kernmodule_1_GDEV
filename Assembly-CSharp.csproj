@@ -62,15 +62,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Controller.cs" />
     <Compile Include="Assets\Scripts\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Ball.cs" />
+    <Compile Include="Assets\Scripts\Controller.cs" />
     <Compile Include="Assets\Scripts\MinoScript.cs" />
+    <Compile Include="Assets\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\Patterns\Singleton.cs" />
     <Compile Include="Assets\Scripts\Sound.cs" />
     <Compile Include="Assets\Scripts\TetrisBlock.cs" />
     <Compile Include="Assets\Scripts\TetrisPlayer.cs" />
-    <Compile Include="Assets\Wall.cs" />
-    <Compile Include="Assets\wallManager.cs" />
+    <Compile Include="Assets\Scripts\Wall.cs" />
+    <Compile Include="Assets\Scripts\wallManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Documenten/projecten/unity/Kernmodule1GDEV/Kernmodule_1_GDEV/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

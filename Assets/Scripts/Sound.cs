@@ -4,7 +4,6 @@ using UnityEngine;
 [System.Serializable]
 public class Sound
 {
-
     public string name;
     public AudioClip clip;
 
@@ -16,8 +15,7 @@ public class Sound
     //public AudioMixerGroup mixer;
 
     public bool loop;
-
+    /*
     [HideInInspector]
-    public AudioSource source;
-
+    public AudioSource source;*/
 }

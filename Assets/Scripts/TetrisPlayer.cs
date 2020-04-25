@@ -12,23 +12,23 @@ public class TetrisPlayer : MonoBehaviour
     public float horMoveSpeed = 0.4f;
     public float verMoveSpeed = 0.5f;
     //float horMovementTimer = 0;
-    float verMovementTimer = 0;
+    private float verMovementTimer = 0;
 
-    bool dead = false;
+    private bool dead = false;
 
     public wallManager wall;
 
-    TetrisBlock currentBlock;
+    private TetrisBlock currentBlock;
     public GameObject[] Blocks;
 
-    Vector3 bottomLeft, bottomRight, topLeft, topRight, spawnPos;
+    private Vector3 bottomLeft, bottomRight, topLeft, topRight, spawnPos;
     public KeyCode leftKey, rightKey, upKey, downKey, fallKey;
 
     private void Awake()
     {
         UpdateOrigins();
         CreateNextBlock();
-        Controller.Instance.addBall(Mathf.Sign(transform.position.x) * 2);
+        Controller.Instance.AddBall(Mathf.Sign(transform.position.x) * 2);
     }
 
     public void CreateNextBlock()
@@ -101,7 +101,7 @@ public class TetrisPlayer : MonoBehaviour
 
                 if (y < 0 || y > gridHeight - 1)
                 {
-                    AudioManager.Instance.playSound("gameover");
+                    AudioManager.Instance.PlaySound("gameover");
                     dead = true;
                     return;
                 }
@@ -144,7 +144,7 @@ public class TetrisPlayer : MonoBehaviour
                 if(transform.position.x < 0) Controller.Instance.score1 += score;
                 else Controller.Instance.score2 += score;
 
-                AudioManager.Instance.playSound("clear" + nRowsCleared + "row");
+                AudioManager.Instance.PlaySound("clear" + nRowsCleared + "row");
                 for (int i = 0; i < nRowsCleared; i++)
                 {
                     wall.ActivateRandomObject();
@@ -152,7 +152,7 @@ public class TetrisPlayer : MonoBehaviour
             }
             else
             {
-                AudioManager.Instance.playSound("nextblock");
+                AudioManager.Instance.PlaySound("nextblock");
             }
 
             currentBlock.PassChildrenTo(transform);

@@ -7,11 +7,11 @@ public class Ball : MonoBehaviour
     public float moveSpeed = 1.20f;
     public static readonly float radius = 0.5f;
     public static readonly float[] angles = new float[]{ -45, -30, -10, 10, 30, 45 };
-    Vector2 moveDir;
+    private Vector2 moveDir;
 
-    LinkedList<Vector3> positionHistory = new LinkedList<Vector3>();
+    private LinkedList<Vector3> positionHistory = new LinkedList<Vector3>();
 
-    Vector3 startPos;
+    private Vector3 startPos;
 
     private void Start()
     {
@@ -20,14 +20,14 @@ public class Ball : MonoBehaviour
         startPos = transform.position;
     }
 
-    private void respawn()
+    private void Respawn()
     {
         if (transform.position.x < 0) Controller.Instance.score2 += 100;
         else Controller.Instance.score1 += 100;
         transform.position = startPos;
     }
 
-    private RaycastHit2D myRaycast()
+    private RaycastHit2D MyRaycast()
     {
         // do ordinary raycast in moving direction.
         RaycastHit2D h = Physics2D.Raycast(transform.position, moveDir, radius);
@@ -47,15 +47,15 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!Controller.Instance.checkInsideField(transform.position))
+        if (!Controller.Instance.CheckInsideField(transform.position))
         {
-            respawn();
+            Respawn();
         }
 
         if (positionHistory.Count > 200) positionHistory.RemoveFirst();
         transform.position += (Vector3)moveDir * moveSpeed * Time.deltaTime;
 
-        RaycastHit2D hit = myRaycast();
+        RaycastHit2D hit = MyRaycast();
 
         // Debug stuff, collider can never be the ball itself.
         Debug.DrawRay(transform.position, moveDir * radius, Color.red);
@@ -81,7 +81,7 @@ public class Ball : MonoBehaviour
             transform.position = positionHistory.Last.Value;
             positionHistory.RemoveLast();
             
-            RaycastHit2D nextHit = myRaycast();
+            RaycastHit2D nextHit = MyRaycast();
             Debug.Assert(nextHit.collider != this);
 
             if (nextHit.collider == null)

@@ -3497,49 +3497,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f5463b3ed5d3b488a82b82fa24c72c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSoundsPlaying: 10
   sounds:
   - name: music
     clip: {fileID: 8300000, guid: 8afb0de351b94134d98d94728292b0e6, type: 3}
     volume: 1
     pitch: 1
     loop: 1
-    source: {fileID: 0}
   - name: clear1row
     clip: {fileID: 8300000, guid: d8bfd47232dfc8242a9171cd46f5cfd9, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
   - name: clear2row
     clip: {fileID: 8300000, guid: 335400d2da7637f4fa886e991b631fa6, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
   - name: clear3row
     clip: {fileID: 8300000, guid: db00108700f0d4b49a3f0f03d389f642, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
   - name: clear4row
     clip: {fileID: 8300000, guid: 0925e12676eb30e44bdf2fcc3ee47b14, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
   - name: nextblock
     clip: {fileID: 8300000, guid: 6a02b48e37c177c4b9dc847ccf112994, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
   - name: gameover
     clip: {fileID: 8300000, guid: 4e33c9d42e97baa40a67df4809da9217, type: 3}
     volume: 1
     pitch: 1
     loop: 0
-    source: {fileID: 0}
 --- !u!4 &900224814
 Transform:
   m_ObjectHideFlags: 0

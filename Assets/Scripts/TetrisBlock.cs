@@ -10,7 +10,6 @@ public class TetrisBlock : MonoBehaviour
         {
             transform.GetChild(i).parent = tran;
         }
-
         Destroy(gameObject);
     }
 }

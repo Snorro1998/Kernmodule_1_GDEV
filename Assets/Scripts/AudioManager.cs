@@ -1,70 +1,56 @@
 ﻿using UnityEngine;
 using System;
-using UnityEngine.Audio;
+using System.Collections.Generic;
+//using UnityEngine.Audio;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
-    public static AudioManager Instance { get; private set; }
-
+    public int maxSoundsPlaying = 10;
     public Sound[] sounds;
+    internal List<AudioSource> audioPool = new List<AudioSource>();
 
-    void Awake()
+    protected override void Awake()
     {
-        foreach (Sound s in sounds)
-        {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.clip;
+        base.Awake();
 
-            s.source.volume = s.volume;
-            s.source.pitch = s.pitch;
-            //s.source.outputAudioMixerGroup = s.mixer;
-            s.source.loop = s.loop;
-        }
-
-        if (Instance == null)
+        for (int i = 0; i < maxSoundsPlaying; i++)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
+            audioPool.Add(gameObject.AddComponent<AudioSource>());
         }
     }
 
-    public void setPitch(string name, float pitch)
+    public AudioSource GetPooledAudioSource()
     {
-        Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s != null)
+        for (int i = 0; i < audioPool.Count; i++)
         {
-            s.source.pitch = pitch;
+            if (!audioPool[i].isPlaying)
+            {
+                return audioPool[i];
+            }
         }
-        else
-        {
-            Debug.LogError("ERROR: Sound " + name + " not found");
-        }
+        return null;
     }
 
-    public void playSound(string name)
+    public void PlaySound(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s != null)
-        {
-            s.source.Play();
-        }
-        else
-        {
-            Debug.LogError("ERROR: Sound " + name + " not found");
-        }
-    }
 
-    public void stopSound(string name)
-    {
-        Sound s = Array.Find(sounds, sound => sound.name == name);
+        //geluid bestaat
         if (s != null)
         {
-            s.source.Stop();
+            AudioSource aud = GetPooledAudioSource();
+            //er spelen momenteel minder geluiden dan het maximum
+            if (aud != null)
+            {
+                //kopieer instellingen en speel het geluid af
+                aud.clip = s.clip;
+                aud.volume = s.volume;
+                aud.pitch = s.pitch;
+                aud.loop = s.loop;
+                aud.Play();
+            }
         }
+        //geluid bestaat niet
         else
         {
             Debug.LogError("ERROR: Sound " + name + " not found");
