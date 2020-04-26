@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Controller.cs" />
     <Compile Include="Assets\Scripts\MinoScript.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\Patterns\Pool.cs" />
     <Compile Include="Assets\Scripts\Patterns\Singleton.cs" />
     <Compile Include="Assets\Scripts\Sound.cs" />
     <Compile Include="Assets\Scripts\TetrisBlock.cs" />
