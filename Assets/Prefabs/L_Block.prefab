@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3598571790681601211}
   - component: {fileID: 8665096000579581930}
   - component: {fileID: 3460231959529123383}
+  - component: {fileID: 5861544426711435890}
   m_Layer: 0
   m_Name: mino_l (2)
   m_TagString: Untagged
@@ -46,6 +47,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -57,6 +59,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -106,6 +109,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5861544426711435890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334496896089312648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b6ca0e15d6a6446bcebcf70907b13e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2150502371764578295
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,6 +132,7 @@ GameObject:
   - component: {fileID: 1624829352256089748}
   - component: {fileID: 3795154781787752023}
   - component: {fileID: 2700848975281688101}
+  - component: {fileID: 7044761369416455630}
   m_Layer: 0
   m_Name: mino_l (3)
   m_TagString: Untagged
@@ -152,6 +168,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -163,6 +180,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -212,6 +230,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7044761369416455630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2150502371764578295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b6ca0e15d6a6446bcebcf70907b13e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5261170747052578829
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,6 +253,7 @@ GameObject:
   - component: {fileID: 3358300015989251150}
   - component: {fileID: 2061548379015268986}
   - component: {fileID: 8168059222031775749}
+  - component: {fileID: 6114254605596922265}
   m_Layer: 0
   m_Name: mino_l
   m_TagString: Untagged
@@ -258,6 +289,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -269,6 +301,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -318,6 +351,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6114254605596922265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261170747052578829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b6ca0e15d6a6446bcebcf70907b13e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5479211470909639786
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +421,7 @@ GameObject:
   - component: {fileID: 3152008898398516575}
   - component: {fileID: 5753847833843094423}
   - component: {fileID: 4996355047329381563}
+  - component: {fileID: 4927224843882354778}
   m_Layer: 0
   m_Name: mino_l (1)
   m_TagString: Untagged
@@ -411,6 +457,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -422,6 +469,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -471,3 +519,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &4927224843882354778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068113790162915221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b6ca0e15d6a6446bcebcf70907b13e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

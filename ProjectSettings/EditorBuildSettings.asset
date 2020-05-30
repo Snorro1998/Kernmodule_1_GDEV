@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/tweedeiteratie.unity
+    guid: 27ad41a8533fbd34e8ba265c9e5570cc
   m_configObjects: {}

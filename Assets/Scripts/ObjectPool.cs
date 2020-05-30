@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 
 
-namespace fiat_multipla
+namespace ObjectPool
 {
     //  Object Pool
     #region ObjectPool 
@@ -372,57 +371,19 @@ namespace fiat_multipla
         public static readonly int PoolSize = 5;
         public static void Run(string[] args)
         {
-#if true
             using (Pool<IChannel> pool = new Pool<IChannel>(PoolSize, p => new PooledChannel(p),
                 LoadingMode.Lazy, AccessMode.Circular))
             {
                 for (int i = 0; i < 50; ++i)
                 {
-                    using (IChannel foo = pool.Acquire())
+                    using (IChannel snd = pool.Acquire())
                     {
                         AudioSource src1 = new AudioSource(new AudioClip("sfx " + i));
 
-                        foo.Play(src1);
+                        snd.Play(src1);
                     }
                 }
             }
-
-#else
-			using (Pool<IChannel> pool = new Pool<IChannel>(PoolSize, p => new PooledChannel(p),
-				LoadingMode.Lazy, AccessMode.Circular))
-
-			{
-				using (ManualResetEvent finishedEvent = new ManualResetEvent(false))
-				{
-					int remaining = 10;
-					for (int i = 0; i < 10; i++)
-					{
-						int q = i;
-						ThreadPool.QueueUserWorkItem(s =>
-						{
-							Console.WriteLine("Thread started: {0}", q);
-							for (int j = 0; j < 50; j++)
-							{
-								using (IChannel foo = pool.Acquire())
-								using (IChannel foo2 = pool.Acquire())
-								{
-									AudioSource src1 = new AudioSource(new AudioClip("sfx " + (2 * j)));
-									AudioSource src2 = new AudioSource(new AudioClip("sfx " + (2 * j + 1)));
-
-									foo.Play(src1);
-									foo2.Play(src2);
-								}
-							}
-							if (Interlocked.Decrement(ref remaining) == 0)
-							{
-								finishedEvent.Set();
-							}
-						});
-					}
-					finishedEvent.WaitOne();
-				}
-			}
-#endif
         }
     }
 }

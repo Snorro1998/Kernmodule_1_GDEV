@@ -4,64 +4,133 @@ using UnityEngine;
 
 public class TetrisPlayer : MonoBehaviour
 {
+    [Header ("Grid Dimensions")]
     public static int gridWidth = 10;
     public static int gridHeight = 20;
 
     public Transform[,] grid = new Transform[gridWidth, gridHeight];
 
+    [Header ("Movement Speed")]
     public float horMoveSpeed = 0.4f;
     public float verMoveSpeed = 0.5f;
-    //float horMovementTimer = 0;
     private float verMovementTimer = 0;
 
-    private bool dead = false;
-
+    internal bool dead = false;
+    public float ballSpawnXPos;
     public wallManager wall;
-
     private TetrisBlock currentBlock;
-    public GameObject[] Blocks;
 
-    private Vector3 bottomLeft, bottomRight, topLeft, topRight, spawnPos;
-    public KeyCode leftKey, rightKey, upKey, downKey, fallKey;
+    private Vector3 spawnPos;
+    internal float score = -20;
+    internal TetrisPlayer otherPlayer;
+
+    public struct Bounds
+    {
+        public Vector3 bottomLeft, bottomRight, topLeft, topRight;
+    }
+
+    Bounds _bounds;
+
+    [System.Serializable]
+    public struct Keys
+    {
+        public KeyCode leftKey, rightKey, upKey, downKey, fallKey;
+    }
+
+    [Header("Controls")]
+    public Keys Controls;
 
     private void Awake()
     {
         UpdateOrigins();
+        otherPlayer = Controller.Instance.player1 != this ? Controller.Instance.player1 : Controller.Instance.player2;
         CreateNextBlock();
-        Controller.Instance.AddBall(Mathf.Sign(transform.position.x) * 2);
+
+        Controller.Instance.AddBall(ballSpawnXPos, this);
+        LineRenderer lr = GetComponent<LineRenderer>();
+
+        if (lr != null)
+        {
+            lr.positionCount = 4;
+            lr.SetPosition(0, _bounds.bottomLeft);
+            lr.SetPosition(1, _bounds.bottomRight);
+            lr.SetPosition(2, _bounds.topRight);
+            lr.SetPosition(3, _bounds.topLeft);
+        }
+    }
+
+    public void AddScoreToOther(float addScore)
+    {
+        if (!otherPlayer.dead)
+        {
+            otherPlayer.AddScore(addScore);
+        }
+    }
+
+    public void AddScore(float addScore)
+    {
+        if (!dead)
+        {
+            score += addScore;
+        }
     }
 
     public void CreateNextBlock()
     {
-        int i = Random.Range(0, Blocks.Length);
-        GameObject gm = Instantiate(Blocks[i], spawnPos, Quaternion.identity);
-        currentBlock = gm.GetComponent<TetrisBlock>();
+        AddScore(20);
+
+        currentBlock = BlockManager.Instance.CreateBlock(spawnPos);
+        currentBlock.tet = this;
     }
 
-    private void Update()
+    void GameOver()
     {
-        DrawDebugLines();
+        AudioManager.Instance.PlaySound("gameover");
 
-        int horSpeed = 0;
-        int verSpeed = 0;
-
-        if (dead) return;
-
-        if (Input.GetKeyDown(leftKey))
+        if (Controller.Instance.player1 != this)
         {
-            horSpeed--;
+            Controller.Instance.player1.verMoveSpeed = 0.1f;
         }
 
-        if (Input.GetKeyDown(rightKey))
+        else
         {
-            horSpeed++;
+            Controller.Instance.player2.verMoveSpeed = 0.1f;
         }
 
-        if (Input.GetKeyDown(upKey))
+        dead = true;
+    }
+
+    void ComputeHorSpeed(ref int hSpeed)
+    {
+        if (Input.GetKeyDown(Controls.leftKey))
         {
-            //draai het blok. Als hij na de rotatie op een ongeldige plek staat dan draait hij hem terug
+            hSpeed--;
+        }
+
+        if (Input.GetKeyDown(Controls.rightKey))
+        {
+            hSpeed++;
+        }
+    }
+
+    void ComputeVerSpeed(ref int vSpeed, ref bool advance)
+    {
+        if (Input.GetKeyDown(Controls.downKey) || Time.time > verMovementTimer + verMoveSpeed)
+        {
+            advance = Time.time > verMovementTimer + verMoveSpeed;
+            verMovementTimer = Time.time;
+            vSpeed--;
+        }
+    }
+
+    void ComputeRotation()
+    {
+        if (Input.GetKeyDown(Controls.upKey))
+        {
+            // draai het blok 90 graden. Als hij na de rotatie op een ongeldige plek staat dan draait hij hem terug
             currentBlock.transform.Rotate(0, 0, 90);
             bool outside = false;
+
             foreach (Transform t in currentBlock.transform)
             {
                 if (IsOutOfBounds(t.position.x, t.position.y) || IsOccupied(t.position.x, t.position.y))
@@ -70,39 +139,31 @@ public class TetrisPlayer : MonoBehaviour
                     break;
                 }
             }
+
             if (outside) currentBlock.transform.Rotate(0, 0, -90);
         }
+    }
 
-        bool advance = false;
-
-        if (Input.GetKeyDown(downKey) || Time.time > verMovementTimer + verMoveSpeed)
-        {
-            advance = Time.time > verMovementTimer + verMoveSpeed;
-            verMovementTimer = Time.time;
-            verSpeed--;
-        }
-
-        ComputeMovement(ref horSpeed, ref verSpeed);
-        MoveBlock(horSpeed, verSpeed);
-
-
-        if (Input.GetKeyDown(fallKey) || (advance && verSpeed == 0))
+    void CheckIfQuickDropOrAtBottom(ref int vSpeed, ref bool advance)
+    {
+        if (Input.GetKeyDown(Controls.fallKey) || (advance && vSpeed == 0))
         {
             int dx = 0, dy = -1;
+
             while (dy != 0)
             {
                 ComputeMovement(ref dx, ref dy);
                 MoveBlock(dx, dy);
             }
+
             foreach (Transform t in currentBlock.transform)
             {
-                int x = Mathf.FloorToInt(t.position.x) - (int)bottomLeft.x;
-                int y = Mathf.FloorToInt(t.position.y) - (int)bottomLeft.y;
+                int x = Mathf.FloorToInt(t.position.x) - (int)_bounds.bottomLeft.x;
+                int y = Mathf.FloorToInt(t.position.y) - (int)_bounds.bottomLeft.y;
 
                 if (y < 0 || y > gridHeight - 1)
                 {
-                    AudioManager.Instance.PlaySound("gameover");
-                    dead = true;
+                    GameOver();
                     return;
                 }
 
@@ -110,6 +171,7 @@ public class TetrisPlayer : MonoBehaviour
             }
 
             int nRowsCleared = 0;
+
             for (int y = 0; y < gridHeight; y++)
             {
                 if (y >= 0 && IsFullRowAt(y))
@@ -123,7 +185,7 @@ public class TetrisPlayer : MonoBehaviour
 
             if (nRowsCleared != 0)
             {
-                int score = 20;
+                int score;
 
                 switch (nRowsCleared)
                 {
@@ -141,11 +203,11 @@ public class TetrisPlayer : MonoBehaviour
                         break;
                 }
 
-                if(transform.position.x < 0) Controller.Instance.score1 += score;
-                else Controller.Instance.score2 += score;
+                AddScore(score);
 
                 AudioManager.Instance.PlaySound("clear" + nRowsCleared + "row");
-                for (int i = 0; i < nRowsCleared; i++)
+
+                for (int i = 0; i < nRowsCleared * 2; i++)
                 {
                     wall.ActivateRandomObject();
                 }
@@ -159,6 +221,33 @@ public class TetrisPlayer : MonoBehaviour
             CreateNextBlock();
             return;
         }
+    }
+
+    void UpdateBlockPosition(ref int horSpeed, ref int verSpeed, ref bool advance)
+    {
+        ComputeRotation();
+        ComputeHorSpeed(ref horSpeed);
+        ComputeVerSpeed(ref verSpeed, ref advance);
+        ComputeMovement(ref horSpeed, ref verSpeed);
+
+        MoveBlock(horSpeed, verSpeed);
+    }
+
+    private void Update()
+    {
+        DrawDebugLines();
+
+        if (dead)
+        {
+            return;
+        }
+
+        bool advance = false;
+        int horSpeed = 0;
+        int verSpeed = 0;
+
+        UpdateBlockPosition(ref horSpeed, ref verSpeed, ref advance);
+        CheckIfQuickDropOrAtBottom(ref verSpeed, ref advance);
     }
 
     void MoveRowsDownFrom(int y)
@@ -186,19 +275,23 @@ public class TetrisPlayer : MonoBehaviour
     {
         for (int x = 0; x < gridWidth; x++)
         {
-            if (grid[x, y] == null) return false;
+            if (grid[x, y] == null)
+            {
+                return false;
+            }
         }
+
         return true;
     }
 
     bool IsOutOfBoundsX(float x)
     {
-        return x < bottomLeft.x || x >= bottomRight.x;
+        return x < _bounds.bottomLeft.x || x >= _bounds.bottomRight.x;
     }
 
     bool IsOutOfBoundsY(float y)
     {
-        return y < bottomLeft.y;
+        return y < _bounds.bottomLeft.y;
     }
 
     bool IsOutOfBounds(float x, float y)
@@ -213,8 +306,8 @@ public class TetrisPlayer : MonoBehaviour
 
     bool IsOccupied(int x, int y)
     {
-        x -= Mathf.FloorToInt(bottomLeft.x);
-        y -= Mathf.FloorToInt(bottomLeft.y);
+        x -= Mathf.FloorToInt(_bounds.bottomLeft.x);
+        y -= Mathf.FloorToInt(_bounds.bottomLeft.y);
         return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight && grid[x, y];
     }
 
@@ -223,6 +316,7 @@ public class TetrisPlayer : MonoBehaviour
         foreach (Transform t in currentBlock.transform)
         {
             float newx = Mathf.Floor(t.position.x) + Mathf.Sign(hSpeed);
+
             if (IsOutOfBoundsX(newx) || IsOccupied(newx, t.position.y))
             {
                 return false;
@@ -236,6 +330,7 @@ public class TetrisPlayer : MonoBehaviour
         foreach (Transform t in currentBlock.transform)
         {
             float newy = Mathf.Floor(t.position.y) + Mathf.Sign(vSpeed);
+
             if (IsOutOfBoundsY(newy) || IsOccupied(t.position.x, newy))
             {
                 return false;
@@ -250,6 +345,7 @@ public class TetrisPlayer : MonoBehaviour
         {
             hSpeed = 0;
         }
+
         if (!CheckMovementYPossible(ref vSpeed))
         {
             vSpeed = 0;
@@ -263,18 +359,18 @@ public class TetrisPlayer : MonoBehaviour
 
     void UpdateOrigins()
     {
-        bottomLeft = transform.position;
-        bottomRight = bottomLeft + Vector3.right * gridWidth;
-        topLeft = transform.position + Vector3.up * gridHeight;
-        topRight = topLeft + Vector3.right * gridWidth;
-        spawnPos = new Vector3(topLeft.x + (topRight.x - topLeft.x) / 2, topLeft.y, topLeft.z);
+        _bounds.bottomLeft = transform.position;
+        _bounds.bottomRight = _bounds.bottomLeft + Vector3.right * gridWidth;
+        _bounds.topLeft = transform.position + Vector3.up * gridHeight;
+        _bounds.topRight = _bounds.topLeft + Vector3.right * gridWidth;
+        spawnPos = new Vector3(_bounds.topLeft.x + (_bounds.topRight.x - _bounds.topLeft.x) / 2, _bounds.topLeft.y, _bounds.topLeft.z);
     }
 
     void DrawDebugLines()
     {    
-        Debug.DrawLine(topLeft, topRight);
-        Debug.DrawLine(topRight, bottomRight);
-        Debug.DrawLine(bottomLeft, bottomRight);
-        Debug.DrawLine(topLeft, bottomLeft);
+        Debug.DrawLine(_bounds.topLeft, _bounds.topRight);
+        Debug.DrawLine(_bounds.topRight, _bounds.bottomRight);
+        Debug.DrawLine(_bounds.bottomLeft, _bounds.bottomRight);
+        Debug.DrawLine(_bounds.topLeft, _bounds.bottomLeft);
     }
 }

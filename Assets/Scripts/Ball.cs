@@ -1,48 +1,79 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    public float moveSpeed = 1.20f;
     public static readonly float radius = 0.5f;
-    public static readonly float[] angles = new float[]{ -45, -30, -10, 10, 30, 45 };
+    public static readonly float[] angles = new float[] { -45, -30, -10, 10, 30, 45 };
+
+    public float moveSpeed = 1.20f;
     private Vector2 moveDir;
 
     private LinkedList<Vector3> positionHistory = new LinkedList<Vector3>();
 
     private Vector3 startPos;
+    internal TetrisPlayer player;
 
     private void Start()
     {
-        float angle = Random.Range(0, 360);
-        moveDir = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
+        SendInNewRandomDirection();
         startPos = transform.position;
+    }
+
+    private void SendInNewRandomDirection()
+    {
+        // zorgt ervoor dat hij niet verticaal gaat
+        int random = Random.Range(0, 2);
+        float angle = random == 0 ? Random.Range(-70, 70) : Random.Range(110, 250);
+        moveDir = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
     }
 
     private void Respawn()
     {
-        if (transform.position.x < 0) Controller.Instance.score2 += 100;
-        else Controller.Instance.score1 += 100;
+        if (player.dead)
+        {
+            if (!player.otherPlayer.dead)
+            {
+                player = player.otherPlayer;
+                startPos.x = player.otherPlayer.ballSpawnXPos;
+            }
+            
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        player.AddScoreToOther(50);
+
         transform.position = startPos;
+        SendInNewRandomDirection();
     }
 
     private RaycastHit2D MyRaycast()
     {
-        // do ordinary raycast in moving direction.
-        RaycastHit2D h = Physics2D.Raycast(transform.position, moveDir, radius);
-        if (h.collider != null) return h;
+        // raycast in bewegingsrichting
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDir, radius);
+
+        if (hit.collider != null)
+        {
+            return hit;
+        }
         
         float angle = Mathf.Atan2(moveDir.y, moveDir.x);
         
-        // raycast in all directions until a collider has been found.
+        // raycast in alle richtingen totdat een collider geraakt wordt
         foreach (float a in angles)
         {
-            h = Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos((angle + a) * Mathf.Deg2Rad), Mathf.Sin((angle + a) * Mathf.Deg2Rad)), radius);
-            if (h.collider != null) return h;
+            hit = Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos((angle + a) * Mathf.Deg2Rad), Mathf.Sin((angle + a) * Mathf.Deg2Rad)), radius);
+
+            if (hit.collider != null)
+            {
+                return hit;
+            }
         }
 
-        return h;
+        return hit;
     }
 
     private void FixedUpdate()
@@ -52,12 +83,14 @@ public class Ball : MonoBehaviour
             Respawn();
         }
 
-        if (positionHistory.Count > 200) positionHistory.RemoveFirst();
+        if (positionHistory.Count > 200)
+        {
+            positionHistory.RemoveFirst();
+        }
+
         transform.position += (Vector3)moveDir * moveSpeed * Time.deltaTime;
-
         RaycastHit2D hit = MyRaycast();
-
-        // Debug stuff, collider can never be the ball itself.
+        
         Debug.DrawRay(transform.position, moveDir * radius, Color.red);
         Debug.Assert(hit.collider != this);
 
@@ -67,15 +100,21 @@ public class Ball : MonoBehaviour
             return;
         }
 
-        Wall w = hit.transform.GetComponent<Wall>();
-        if (w != null)
+        Wall wall = hit.transform.GetComponent<Wall>();
+        MinoScript mino = hit.transform.GetComponent<MinoScript>();
+
+        if (wall != null)
         {
-            if (transform.position.x > 0) Controller.Instance.score1 += 10;
-            else Controller.Instance.score2 += 10;
-            w.Deactivate();
+            player.AddScoreToOther(10);
+            wall.Deactivate();
         }
 
-        // Collision has occurred, keep backtracking until the collision has been resolved or no previous non-colliding point could be found.
+        else if (mino != null)
+        {
+            mino.Hit();
+        }
+
+        // hij knalt ergens tegenaan en stapt terug in zn positiehistorie totdat dit niet meer het geval is
         while (positionHistory.Count > 0)
         {
             transform.position = positionHistory.Last.Value;
@@ -85,21 +124,17 @@ public class Ball : MonoBehaviour
             Debug.Assert(nextHit.collider != this);
 
             if (nextHit.collider == null)
-            {
-                // Note that hit is used rather than nextHit, because hit is the last previous conflicting point (nextHit.collider == null here)
-
-                // Compute quadrant that ball is moving to
-                // TODO should this still add 180 degrees?
+            {   
                 float angle = Mathf.Round(Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg / 90) * 90;
-                // Determine angle of collision
+                // bepaal invalshoek
                 Vector3 inAngle = Vector3.Normalize(new Vector3(hit.point.x, hit.point.y, 0) - transform.position);
-                // Compute normal vector of colliding gameobject
+                // bereken normaalvector
                 Vector3 normal = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
                 moveDir = Vector3.Reflect(inAngle, normal);
                 return;
             }
 
-            // advance to next point
+            // ga naar het volgende punt
             hit = nextHit;
         }
     }
