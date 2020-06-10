@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 
-public class MinoScript : MonoBehaviour
+public class MinoScript : MonoBehaviour, IHealth
 {
-    internal float hp;
     private TetrisPlayer player;
+
+    public float hp
+    {
+        get;
+        set;
+    }
 
     private void Start()
     {

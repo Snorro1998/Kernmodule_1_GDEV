@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Ball : MonoBehaviour, IStartPosition
+/// <summary>
+/// Script wat bij een balobject aanwezig is en het meeste hiervoor regelt
+/// </summary>
+public class V3Ball : MonoBehaviour, IStartPosition
 {
     public static readonly float radius = 0.5f;
     public static readonly float[] angles = new float[] { -45, -30, -10, 10, 30, 45 };
@@ -11,7 +14,7 @@ public class Ball : MonoBehaviour, IStartPosition
 
     private LinkedList<Vector3> positionHistory = new LinkedList<Vector3>();
 
-    internal TetrisPlayer player;
+    internal V3Player player;
 
     public Vector3 startPosition
     {
@@ -43,11 +46,11 @@ public class Ball : MonoBehaviour, IStartPosition
         moveDir = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
     }
 
-    // <summmary>
-    // zet hem terug op zn startpositie als hij het scherm verlaat
-    // </summary>
     private void Respawn()
     {
+        //als hij uit het scherm gaat en in een muur spawnt voorkomt dit dat hij terug naar zijn laatste positie, buiten het scherm verspringt
+        positionHistory.Clear();
+
         if (player.dead)
         {
             if (!player.otherPlayer.dead)
@@ -56,17 +59,16 @@ public class Ball : MonoBehaviour, IStartPosition
                 Vector3 tmpPos = startPosition;
                 tmpPos.x = player.otherPlayer.ballSpawnXPos;
                 SetStartPosition(tmpPos);
-            }
-            
+            }         
+
             else
             {
                 gameObject.SetActive(false);
             }
         }
 
-        player.AddScoreToOther(50);
+        player.IncreasePlayerScore(player.otherPlayer, 50);
         JumpToStartPosition();
-        //transform.position = startPosition;
         SendInNewRandomDirection();
     }
 
@@ -79,9 +81,9 @@ public class Ball : MonoBehaviour, IStartPosition
         {
             return hit;
         }
-        
+
         float angle = Mathf.Atan2(moveDir.y, moveDir.x);
-        
+
         // raycast in alle richtingen totdat een collider geraakt wordt
         foreach (float a in angles)
         {
@@ -98,7 +100,7 @@ public class Ball : MonoBehaviour, IStartPosition
 
     private void FixedUpdate()
     {
-        if (!Controller.Instance.CheckInsideField(transform.position))
+        if (!V3Controller.Instance.CheckInsideField(transform.position))
         {
             Respawn();
         }
@@ -110,7 +112,7 @@ public class Ball : MonoBehaviour, IStartPosition
 
         transform.position += (Vector3)moveDir * moveSpeed * Time.deltaTime;
         RaycastHit2D hit = MyRaycast();
-        
+
         Debug.DrawRay(transform.position, moveDir * radius, Color.red);
         Debug.Assert(hit.collider != this);
 
@@ -121,17 +123,17 @@ public class Ball : MonoBehaviour, IStartPosition
         }
 
         Wall wall = hit.transform.GetComponent<Wall>();
-        MinoScript mino = hit.transform.GetComponent<MinoScript>();
+        V3Mino mino = hit.transform.GetComponent<V3Mino>();
 
         if (wall != null)
         {
-            player.AddScoreToOther(10);
+            player.IncreasePlayerScore(player.otherPlayer ,10);
             wall.Deactivate();
         }
 
         else if (mino != null)
         {
-            mino.Hit();
+            mino.GetHit();
         }
 
         // hij knalt ergens tegenaan en stapt terug in zn positiehistorie totdat dit niet meer het geval is
@@ -139,12 +141,12 @@ public class Ball : MonoBehaviour, IStartPosition
         {
             transform.position = positionHistory.Last.Value;
             positionHistory.RemoveLast();
-            
+
             RaycastHit2D nextHit = MyRaycast();
             Debug.Assert(nextHit.collider != this);
 
             if (nextHit.collider == null)
-            {   
+            {
                 float angle = Mathf.Round(Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg / 90) * 90;
                 // bepaal invalshoek
                 Vector3 inAngle = Vector3.Normalize(new Vector3(hit.point.x, hit.point.y, 0) - transform.position);

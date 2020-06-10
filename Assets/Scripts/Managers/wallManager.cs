@@ -17,6 +17,11 @@ public class wallManager : MonoBehaviour
 
     public void ActivateRandomObject()
     {
+        if (inactiveObjects.Count == 0)
+        {
+            return;
+        }
+
         int i = Random.Range(0, inactiveObjects.Count);
         Transform t = inactiveObjects[i];
         t.gameObject.SetActive(true);
@@ -29,5 +34,16 @@ public class wallManager : MonoBehaviour
         activeObjects.Remove(t);
         inactiveObjects.Add(t);
         t.gameObject.SetActive(false);
+    }
+
+    public void ActivateAllObjects()
+    {
+        for (int i = inactiveObjects.Count - 1; i >= 0; i--)
+        {
+            Transform t = inactiveObjects[i];
+            t.gameObject.SetActive(true);
+            activeObjects.Add(t);
+            inactiveObjects.Remove(t);
+        }
     }
 }

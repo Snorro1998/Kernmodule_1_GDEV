@@ -14,6 +14,7 @@ public class AudioManager : Singleton<AudioManager>
     {
         base.Awake();
         sources = new Pool<AudioSource>(3, maxSoundsPlaying, () => gameObject.AddComponent<AudioSource>(), audio => audio.isPlaying);
+        PlaySound("music");
     }
 
     public void PlaySound(string name)

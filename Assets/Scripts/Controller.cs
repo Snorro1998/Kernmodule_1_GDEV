@@ -10,6 +10,7 @@ public class Controller : Singleton<Controller>
     public TetrisPlayer player1, player2;
     public GameObject gameOverGUI;
     public Text winText;
+    private AudioManager aud;
 
     [System.Serializable]
     public class moveBounds
@@ -21,7 +22,8 @@ public class Controller : Singleton<Controller>
 
     private void Start()
     {
-        AudioManager.Instance.PlaySound("music");
+        aud = AudioManager.Instance;
+        aud.PlaySound("music");
         gameOverGUI.SetActive(false);
     }
 
@@ -70,7 +72,7 @@ public class Controller : Singleton<Controller>
         {
             QuitGame();
         }
-
+        
         if (player1.dead && player2.dead && !gameOverGUI.activeInHierarchy)
         {
             string winningPlayer = player1.score > player2.score ? "1" : "2";

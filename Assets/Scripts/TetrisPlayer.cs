@@ -266,7 +266,9 @@ public class TetrisPlayer : MonoBehaviour
     {
         for (int x = 0; x < gridWidth; x++)
         {
-            Destroy(grid[x, y].gameObject);
+            GameObject gm = grid[x, y].gameObject;
+            gm.SetActive(false);
+            //Destroy(grid[x, y].gameObject);
             grid[x, y] = null;
         }
     }
