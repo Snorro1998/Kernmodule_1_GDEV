@@ -76,6 +76,7 @@
     <Compile Include="Assets\Scripts\TetrisBlock.cs" />
     <Compile Include="Assets\Scripts\TetrisPlayer.cs" />
     <Compile Include="Assets\Scripts\Wall.cs" />
+    <Compile Include="Assets\V3\V3AudioManager.cs" />
     <Compile Include="Assets\V3\V3Ball.cs" />
     <Compile Include="Assets\V3\V3BlockManager.cs" />
     <Compile Include="Assets\V3\V3Controller.cs" />
@@ -86,7 +87,6 @@
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\mcs.rsp" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />

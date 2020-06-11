@@ -133,7 +133,7 @@ public class V3Ball : MonoBehaviour, IStartPosition
 
         else if (mino != null)
         {
-            mino.GetHit();
+            mino.Hit();
         }
 
         // hij knalt ergens tegenaan en stapt terug in zn positiehistorie totdat dit niet meer het geval is

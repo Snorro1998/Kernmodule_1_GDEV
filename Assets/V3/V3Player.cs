@@ -7,7 +7,8 @@ using UnityEngine;
 /// </summary>
 public class V3Player : MonoBehaviour
 {
-    private AudioManager audioManager;
+    //private AudioManager audioManager;
+    private V3AudioManager audioManager;
     private V3Controller controller;
     private V3BlockManager blockManager;
 
@@ -50,7 +51,8 @@ public class V3Player : MonoBehaviour
     private void Start()
     {
         // is geloof ik beter voor performance dan telkens iets.instance te gebruiken
-        audioManager = AudioManager.Instance;
+        //audioManager = AudioManager.Instance;
+        audioManager = V3AudioManager.Instance;
         controller = V3Controller.Instance;
         blockManager = V3BlockManager.Instance;
 

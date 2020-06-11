@@ -72,7 +72,7 @@ public class V3BlockManager : Singleton<V3BlockManager>
             if (gm != null)
             {
                 mino.tetromino = tetromino;
-                mino.health = Random.Range(1, 3);
+                mino.hp = Random.Range(1, 3);
 
                 gm.transform.SetParent(tetromino.transform);
                 gm.transform.localPosition = s.minoPositions[i];

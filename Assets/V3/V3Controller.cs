@@ -22,7 +22,9 @@ public class V3Controller : Singleton<V3Controller>
     public GameObject ballPrefab;
     public GameObject gameOverUI;
 
-    public List<V3Ball> ballList = new List<V3Ball>();
+    public Text winText;
+
+    //public List<V3Ball> ballList = new List<V3Ball>();
 
     [System.Serializable]
     public class moveBounds
@@ -35,7 +37,12 @@ public class V3Controller : Singleton<V3Controller>
     protected override void Awake()
     {
         base.Awake();
-        gameOverUI.SetActive(false);
+        gameOverUI.SetActive(false);     
+    }
+
+    private void Start()
+    {
+        V3AudioManager.Instance.PlayMusic("music");
     }
 
     private void Update()
@@ -83,7 +90,7 @@ public class V3Controller : Singleton<V3Controller>
     {
         V3Ball ball = Instantiate(ballPrefab, new Vector2(player.ballSpawnXPos, Random.Range(0.5f, 19.5f)), Quaternion.identity).GetComponent<V3Ball>();
         ball.player = player;
-        ballList.Add(ball);
+        //ballList.Add(ball);
     }
 
     public void CheckBothDead()
@@ -91,6 +98,8 @@ public class V3Controller : Singleton<V3Controller>
         if (player1.dead && player2.dead)
         {
             gameOverUI.SetActive(true);
+            string winningPlayer = player1.score > player2.score ? "1" : "2";
+            winText.text = player1.score == player2.score ? "Gelijk spel!" : "Speler " + winningPlayer + " heeft gewonnen!";
         }
     }
 }

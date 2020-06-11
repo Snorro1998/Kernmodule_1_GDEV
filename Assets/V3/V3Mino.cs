@@ -5,10 +5,25 @@ using UnityEngine;
 /// <summary>
 /// Script voor minos, de bouwstenen van tetrominos
 /// </summary>
-public class V3Mino : MonoBehaviour
+public class V3Mino : MonoBehaviour, IHealth
 {
     public V3Tetromino tetromino;
-    internal float health = 1;
+
+    public float hp
+    {
+        get;
+        set;
+    }
+
+    public void Hit()
+    {
+        hp--;
+
+        if (hp == 0)
+        {
+            GetDestroyed();
+        }
+    }
 
     // geraakt door een bal of een volle rij die verwijdert word
     public void RemoveFromGrid()
@@ -17,16 +32,6 @@ public class V3Mino : MonoBehaviour
         {
             tetromino.player.RemoveAtPosition(transform.position);
         }  
-    }
-
-    public void GetHit()
-    {
-        health--;
-
-        if (health == 0)
-        {
-            GetDestroyed();
-        }
     }
 
     public void GetDestroyed()

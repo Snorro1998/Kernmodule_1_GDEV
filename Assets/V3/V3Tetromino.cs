@@ -5,26 +5,34 @@ using UnityEngine;
 /// <summary>
 /// Script wat bij een tetromino-object, oftewel een vallend blok aanwezig is en het meeste hiervoor regelt
 /// </summary>
-public class V3Tetromino : MonoBehaviour
+public class V3Tetromino : MonoBehaviour, IStartPosition
 {
     private V3BlockManager blockManager;
-
     public V3Player player;
-    private Vector3 startPosition;
 
-    private void Start()
+    public Vector3 startPosition
     {
-        blockManager = V3BlockManager.Instance;
-        startPosition = transform.position;
-        GetNewShape();
+        get;
+        set;
     }
 
-    // springt naar startpositie
+    public void SetStartPosition(Vector3 pos)
+    {
+        startPosition = pos;
+    }
+
     public void JumpToStartPosition()
     {
         transform.position = startPosition;
     }
 
+    private void Start()
+    {
+        blockManager = V3BlockManager.Instance;
+        SetStartPosition(transform.position);
+        GetNewShape();
+    }
+    
     // vraagt een nieuwe vorm aan van de blockmanager
     public void GetNewShape()
     {
